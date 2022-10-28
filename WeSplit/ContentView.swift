@@ -13,8 +13,7 @@ struct ContentView: View {
     @State private var tipPercentage = 20
     @FocusState private var amountIsFocused: Bool
     
-    let tipPercentages = [0]
-    
+    // A computed property that returns the result of what is the total for each people
     var totalPerPerson: Double {
         let peopleCount = Double(numberOfPeople + 2)
         let tipSelection = Double(tipPercentage)
@@ -26,6 +25,7 @@ struct ContentView: View {
         return amountPerPerson
     }
     
+    // A computed property that returns the total amount with the addition of some tip percentage chosen
     var totalWithTip: Double {
         let tipSelection = Double(tipPercentage)
         
@@ -35,6 +35,7 @@ struct ContentView: View {
         return grandTotal
     }
     
+    // A computed property that takes the current state of the currency code on the device
     var currencyType: FloatingPointFormatStyle<Double>.Currency {
         .currency(code: Locale.current.currencyCode ?? "USD")
     }
@@ -43,10 +44,12 @@ struct ContentView: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currencyCode ?? "USD"))
+                    TextField("Amount", value: $checkAmount, format: currencyType)
                         .keyboardType(.decimalPad)
+                    // Tracks if the "Done" button above the keyboard is pressed, hiding the keyboard if so
                         .focused($amountIsFocused)
                     
+                    // Creates a list to select how many people to split the check
                     Picker("Number of people", selection: $numberOfPeople) {
                         ForEach (2..<100) {
                             Text("\($0) people")
@@ -75,14 +78,17 @@ struct ContentView: View {
                 } header: {
                     Text("Total amount with tip")
                 }
+                // A thernary modifier to the section, changing the color based on the tipPercentage
                 .foregroundColor(tipPercentage == 0 ? .red : .accentColor)
             }
             .navigationTitle("WeSplit")
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
+                    // Hides the keyboard
                     Button("Done") {
                         amountIsFocused = false
+
                     }
                 }
             }
